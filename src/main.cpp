@@ -32,24 +32,28 @@ void takeoff(ros::Publisher& publisher)
 class QuadrotorControl
 {
 private:
-    ros::ServiceClient quadrotorOneMotor, quadrotorTwoMotor;
+    ros::ServiceClient quadrotorOneMotor, quadrotorTwoMotor, quadrotorThreeMotor;
     ros::NodeHandle nodeHandle;
-    ros::Publisher velocityPublisher1, velocityPublisher2;
+    ros::Publisher velocityPublisher1, velocityPublisher2, velocityPublisher3;
     geometry_msgs::Twist velocity;
+    geometry_msgs::Twist velocity2;
+    geometry_msgs::Twist velocity3;
 public:
     QuadrotorControl(ros::NodeHandle& nh) : nodeHandle(nh)
     {
         quadrotorOneMotor = nodeHandle.serviceClient<hector_uav_msgs::EnableMotors>("uav1/enable_motors");
         quadrotorTwoMotor = nodeHandle.serviceClient<hector_uav_msgs::EnableMotors>("uav2/enable_motors");
+        quadrotorThreeMotor = nodeHandle.serviceClient<hector_uav_msgs::EnableMotors>("uav3/enable_motors");
     }
     void EnableMotors()
     {
         ros::Rate rate(0.25);
-        hector_uav_msgs::EnableMotors motor1, motor2;
+        hector_uav_msgs::EnableMotors motor1, motor2, motor3;
         motor1.request.enable = 1;
         motor2.request.enable = 1;
+        motor3.request.enable = 1;
         rate.sleep();
-        if(quadrotorOneMotor.call(motor1) && quadrotorTwoMotor.call(motor2))
+        if(quadrotorOneMotor.call(motor1) && quadrotorTwoMotor.call(motor2) && quadrotorThreeMotor.call(motor3))
         {
             ROS_INFO("Success\n");
         } else{
@@ -61,11 +65,19 @@ public:
         ROS_INFO("takeoff start\n");
         ros::Rate rate(0.25);
         velocityPublisher1 = nodeHandle.advertise<geometry_msgs::Twist>("uav1/cmd_vel", 10);
+        velocityPublisher2 = nodeHandle.advertise<geometry_msgs::Twist>("uav2/cmd_vel", 10);
+        velocityPublisher3 = nodeHandle.advertise<geometry_msgs::Twist>("uav3/cmd_vel", 10);
 
         velocity = geometry_msgs::Twist();
-        velocity.linear.z = 1.0;
+        velocity2 = geometry_msgs::Twist();
+        velocity3 = geometry_msgs::Twist();
+        velocity.linear.z = 1.5;
+        velocity2.linear.z = 1.5;
+        velocity3.linear.z = 1.5;
         rate.sleep();
         velocityPublisher1.publish(velocity);
+        velocityPublisher2.publish(velocity2);
+        velocityPublisher3.publish(velocity3);
         rate.sleep();
         Flysquare();
         //Forward();
@@ -76,11 +88,17 @@ public:
 
     void Stop()
     {
-        if(velocityPublisher1.getNumSubscribers() > 0)
+        /*if(velocityPublisher1.getNumSubscribers() > 0)
         {
             velocity = geometry_msgs::Twist();
             velocityPublisher1.publish(velocity); // sending stop message
-        }
+        }*/
+        velocity = geometry_msgs::Twist();
+        velocityPublisher1.publish(velocity); // sending stop message
+        velocity2 = geometry_msgs::Twist();
+        velocityPublisher2.publish(velocity2); // sending stop message
+        velocity3 = geometry_msgs::Twist();
+        velocityPublisher3.publish(velocity3); // sending stop message
     }
 
     void Forward()
@@ -94,26 +112,50 @@ public:
         ROS_INFO("Dispatching flysquare action.");
         // forward
         velocity = geometry_msgs::Twist();
-        velocity.linear.x = 1.0;
+        velocity2 = geometry_msgs::Twist();
+        velocity3 = geometry_msgs::Twist();
+        velocity.linear.x = 1.5;
+        velocity2.linear.x = 1.5;
+        velocity3.linear.x = 1.5;
         velocityPublisher1.publish(velocity);
+        velocityPublisher2.publish(velocity2);
+        velocityPublisher3.publish(velocity3);
         loop_rate.sleep();
 
         // right
         velocity = geometry_msgs::Twist();
+        velocity2 = geometry_msgs::Twist();
+        velocity3 = geometry_msgs::Twist();
         velocity.linear.y = 1.0;
+        velocity2.linear.y = 1.0;
+        velocity3.linear.y = 1.0;
         velocityPublisher1.publish(velocity);
+        velocityPublisher2.publish(velocity2);
+        velocityPublisher3.publish(velocity3);
         loop_rate.sleep();
 
         // backward
         velocity = geometry_msgs::Twist();
-        velocity.linear.x = -1.0;
+        velocity2 = geometry_msgs::Twist();
+        velocity3 = geometry_msgs::Twist();
+        velocity.linear.x = -1.5;
+        velocity2.linear.x = -1.5;
+        velocity3.linear.x = -1.5;
         velocityPublisher1.publish(velocity);
+        velocityPublisher2.publish(velocity2);
+        velocityPublisher3.publish(velocity3);
         loop_rate.sleep();
 
         // left
         velocity = geometry_msgs::Twist();
+        velocity2 = geometry_msgs::Twist();
+        velocity3 = geometry_msgs::Twist();
         velocity.linear.y = -1.0;
+        velocity2.linear.y = -1.0;
+        velocity3.linear.y = -1.0;
         velocityPublisher1.publish(velocity);
+        velocityPublisher2.publish(velocity2);
+        velocityPublisher3.publish(velocity3);
         loop_rate.sleep();
 
         Stop();
