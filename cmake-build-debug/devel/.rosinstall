@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/optio32/catkin_ws/src/quadrotor_flight/cmake-build-debug/devel/setup.sh

@@ -1,0 +1,8 @@
+prefix=/home/optio32/catkin_ws/src/quadrotor_flight/cmake-build-debug/devel
+
+Name: quadrotor_flight
+Description: Description of quadrotor_flight
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/optio32/catkin_ws/src/quadrotor_flight/cmake-build-debug/devel/lib 
+Requires: 

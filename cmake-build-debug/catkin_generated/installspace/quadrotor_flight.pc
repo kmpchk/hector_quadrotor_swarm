@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: quadrotor_flight
+Description: Description of quadrotor_flight
+Version: 0.0.0
+Cflags: 
+Libs: -L/usr/local/lib 
+Requires: 
